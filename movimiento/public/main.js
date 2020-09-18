@@ -1,7 +1,10 @@
-const wsHost = window.location.origin
-  .replace('10068', '10070')
-  .replace('http', 'ws')
-const ws = new WebSocket(wsHost)
+import wsPort from './virus.exe'
+
+const wsUrl = new URL(window.location)
+wsUrl.protocol = wsUrl.protocol.replace('http', 'ws')
+wsUrl.port = wsPort
+wsUrl.pathname = '/main.js'
+const ws = new WebSocket(wsUrl)
 
 const players = new Map()
 let playerId = null

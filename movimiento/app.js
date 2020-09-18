@@ -1,6 +1,9 @@
+const { primaryPort } = require('../ports.json')
+
 const express = require('express')
+const expressWs = require('express-ws')
 const app = express()
-const port = 10068
+expressWs(app)
 
 const nodePath = require('path')
 const staticFileOptions = {
@@ -11,18 +14,19 @@ app.get('/', (req, res) => {
   res.sendFile('index.html', staticFileOptions)
 })
 
+app.get('/virus.exe', (req, res) => {
+  res.set('Content-Type', 'application/javascript; charset=UTF-8')
+  res.send(`export default ${JSON.stringify(primaryPort)}`)
+})
+
 app.get('/style.css', (req, res) => {
   res.sendFile('main.js', staticFileOptions)
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+app.listen(primaryPort, () => {
+  console.log(`Example app listening at http://localhost:${primaryPort}`)
 })
 
-const WebSocket = require('ws')
-const wss = new WebSocket.Server({
-  port: 10070
-})
 const players = new Map()
 function sentToAll (data) {
   const json = JSON.stringify(data)
@@ -30,7 +34,7 @@ function sentToAll (data) {
     ws.send(json)
   }
 }
-wss.on('connection', ws => {
+app.ws('/main.js', ws => {
   const id = Math.random().toString(36).slice(2)
   const playerData = {
     x: Math.random(),
@@ -44,35 +48,33 @@ wss.on('connection', ws => {
   sentToAll({ type: 'join', id, player: playerData })
 
   ws.on('message', msg => {
-    const data = JSON.parse(msg)
-    switch (data.type) {
-      case 'init': {
-        playerId = data.id
-        playerData = data.player
-        break
-      }
-      case 'join': {
-        players.set(data.id, data.player)
-        break
-      }
-      case 'update': {
-        const { x, y, name, colour, message } = data.changes
-        if (x >= 0 && x <= 1) playerData.x = x
-        if (y >= 0 && y <= 1) playerData.y = y
-        if (typeof name === 'string' && name.length >= 3 && name.length <= 20) {
-          playerData.name = name
+    try {
+      const data = JSON.parse(msg)
+      switch (data.type) {
+        case 'update': {
+          const { x, y, name, colour, message } = data.changes || {}
+          if (x >= 0 && x <= 1) playerData.x = x
+          if (y >= 0 && y <= 1) playerData.y = y
+          if (typeof name === 'string' && name.length >= 3 && name.length <= 20) {
+            playerData.name = name
+          }
+          if (typeof colour === 'string' && /[0-9a-z]{6}/i.test(colour)) {
+            playerData.colour = colour
+          }
+          if (typeof message === 'string' && message.length <= 2000) {
+            playerData.message = message
+          }
+          sentToAll({ type: 'update', id, player: playerData, time: data.time })
+          break
         }
-        if (typeof colour === 'string' && /[0-9a-z]{6}/i.test(colour)) {
-          playerData.colour = colour
-        }
-        if (typeof message === 'string' && message.length <= 2000) {
-          playerData.message = message
-        }
-        sentToAll({ type: 'update', id, player: playerData, time: data.time })
-        break
+        default:
+          console.warn('what.', data)
       }
-      default:
-        console.warn('what.', data)
+    } catch (err) {
+      ws.send(JSON.stringify({
+        text: 'uwu',
+        wucky: err.message
+      }))
     }
   })
   ws.on('close', () => {
