@@ -14,7 +14,6 @@ ws.addEventListener('open', () => {
 })
 ws.addEventListener('message', e => {
   const data = JSON.parse(e.data)
-  console.log(data)
   switch (data.type) {
     case 'init': {
       playerId = data.id
@@ -39,6 +38,10 @@ ws.addEventListener('message', e => {
         players.set(data.id, data.player)
       }
       redraw()
+      break
+    }
+    case 'uwu': {
+      console.error(data.wucky)
       break
     }
     default:
@@ -82,7 +85,7 @@ const canvas = document.getElementById('canvas')
 const c = canvas.getContext('2d')
 let width, height
 
-const commands = /\/colour #([0-9a-z]{6})|\/name (.+)/
+const commands = /\/colour #([0-9a-z]{6})|\/name (.{3,32})/
 input.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
     const match = commands.exec(input.value)
@@ -141,7 +144,11 @@ function redraw () {
     c.beginPath()
     c.arc(visX, visY, radius, 0, 2 * Math.PI)
     c.fill()
-    c.fillStyle = 'black'
+  }
+  c.fillStyle = 'black'
+  for (const { x, y, name, colour, message } of players.values()) {
+    const visX = x * (width - radius * 2) + radius
+    const visY = y * (height - radius * 2) + radius
     c.font = 'bold 12px serif'
     c.textBaseline = 'bottom'
     c.fillText(name, visX, visY)
@@ -153,4 +160,4 @@ function redraw () {
   if (playerData) name.textContent = playerData.name
 }
 
-export { playerId, players }
+export { playerId, players, ws }

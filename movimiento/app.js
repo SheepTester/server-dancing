@@ -72,7 +72,7 @@ app.ws('/main.js', ws => {
       }
     } catch (err) {
       ws.send(JSON.stringify({
-        text: 'uwu',
+        type: 'uwu',
         wucky: err.message
       }))
     }
