@@ -1,0 +1,24 @@
+{
+  "name": "server-dancing",
+  "version": "1.0.0",
+  "description": "Playing around with backend stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SheepTester/server-dancing.git"
+  },
+  "keywords": [],
+  "author": "SheepTester",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SheepTester/server-dancing/issues"
+  },
+  "homepage": "https://github.com/SheepTester/server-dancing#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ws": "^7.3.1"
+  }
+}

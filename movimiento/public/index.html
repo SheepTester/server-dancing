@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>applesuace</title>
+    <meta name="description" content="increase supply quantity demanded goes...?" />
+
+    <style>
+      .text {
+        position: fixed;
+      }
+      #canvas {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+      textarea {
+        background: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <div class="text">
+      <p>Use arrow keys to move (no touch support oof)</p>
+      <p><code>/colour #&lt;6 digit hex&gt;</code> to change colour; <code>/name &lt;name&gt;</code> to change name.</p>
+      <textarea placeholder="Press enter to send" rows="8" cols="80" id="input" autofocus></textarea>
+      <p>Your name is <strong id="name">[not connected lol]</strong></p>
+    </div>
+    <script type="module">
+      import * as mod from './style.css'
+      Object.assign(window, mod)
+    </script>
+  </body>
+</html>
